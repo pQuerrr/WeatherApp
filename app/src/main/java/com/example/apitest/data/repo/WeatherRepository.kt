@@ -1,13 +1,9 @@
 package com.example.apitest.data.repo
 
-import android.util.Log
-import com.example.apitest.data.CityCoordinates
 import com.example.apitest.data.DailyForecast
 import com.example.apitest.data.ForecastItem
-import com.example.apitest.data.HourlyWeather
 import com.example.apitest.data.WeatherResponse
 import com.example.apitest.data.service.weatherapiseivice.WeatherApiService
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
@@ -40,6 +36,7 @@ class WeatherRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
     suspend fun getWeeklyForecast(city: String):Result<List<DailyForecast>>{
         return try {
             val response = apiService.getThreeHourForecast(city,apiKey = apiKey)
@@ -56,7 +53,6 @@ class WeatherRepository @Inject constructor(
                         .groupingBy { it.description }
                         .eachCount()
                         .maxByOrNull { it.value }?.key ?:"No data"
-
                     DailyForecast(date,tempMin,tempMax,description)
                 }
                 Result.success(dailyForecast)

@@ -2,11 +2,14 @@ package com.example.apitest.presentation.mainscreen
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,8 +54,10 @@ fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
     var city by remember { mutableStateOf("Moscow") }
     Column(
         Modifier
-            .fillMaxSize()
-            .padding(16.dp), verticalArrangement = Arrangement.Center
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextField(value = city, onValueChange = { city = it }, label = { Text("Введите город") })
         Button(onClick = {
@@ -69,7 +74,13 @@ fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
 //            val error by viewModel.error.observeAsState()
 
             if (weather != null) {
-                MainTemperature(city = city, temp = weather.main.temp, description = weather.weather[0].description, min = weather.main.temp_min, max = weather.main.temp_max )
+                MainTemperature(
+                    city = city,
+                    temp = weather.main.temp,
+                    description = weather.weather[0].description,
+                    min = weather.main.temp_min,
+                    max = weather.main.temp_max
+                )
 //                Text("Температура: ${weather.main.temp}°C")
 //                Text("Погода: ${
 //                    weather.weather[0].description.replaceFirstChar {
@@ -159,7 +170,7 @@ fun ForecastList(
     val dtf = SimpleDateFormat("dd.MM")
     val tdf = SimpleDateFormat("HH:mm")
     LazyRow(
-        modifier = Modifier.fillMaxSize()
+        
     ) {
         items(forecastItems) { forecastItem ->
 
@@ -179,12 +190,28 @@ fun ForecastListPreview() {
 }
 
 @Composable
+fun HorizontalSeparator() {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(1.dp)
+        .background(color = Color.Black)){
+    }
+}
+
+@Preview
+@Composable
+private fun HorizontalSeparatorPreivew() {
+    HorizontalSeparator()
+}
+
+@SuppressLint("DefaultLocale")
+@Composable
 fun MainTemperature(
-    modifier: Modifier = Modifier,
     city: String,
     temp: Double,
     description: String,
-    min: Double,max: Double
+    min: Double,
+    max: Double
 ) {
     Card {
         Column(modifier = Modifier
@@ -193,7 +220,8 @@ fun MainTemperature(
                 fontSize = 20.sp,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
-                text = city //Город
+                text = city, //Город
+            style = MaterialTheme.typography.titleMedium
             )
             Text(
                 fontSize = 40.sp,
@@ -226,51 +254,54 @@ fun MainTemperature(
 @Preview(showBackground = true)
 @Composable
 private fun MainTemperaturePreview() {
-    MainTemperature(city = "Ялта", temp = 10.0, description = "временами облачно", min = 10.0, max = 10.0)
+    MainTemperature(
+        city = "Ялта",
+        temp = 10.0,
+        description = "временами облачно",
+        min = 10.0,
+        max = 10.0
+    )
 }
 
 @Composable
 fun WeeklyForecastTable(
     modifier: Modifier = Modifier,
     forecast: List<DailyForecast>) {
-    LazyColumn(modifier = modifier
-        .padding(16.dp)
-        .fillMaxSize()) {
-        Log.d("UI", "Forecast size: ${forecast.size}")
+    LazyColumn(
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .background(color = Color.White)
+            .border(1.dp, color = Color.Gray)
+    ) {
+        Log.d("WeatherWWWW", "$forecast")
         items(forecast) { item ->
-            Card(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
+                    .padding(5.dp, 2.dp, 5.dp, 0.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
+                Text(
+                    text = item.date,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Column {
-                            Text(text = item.date, style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                text = item.description,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(
-                                text = "Min: ${item.tempMin}°C",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "Max: ${item.tempMax}°C",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                }
+                        .padding(1.dp)
+                )
+                Text(
+                    text = item.description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Min: ${String.format("%.0f", item.tempMin)}°C",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Max: ${String.format("%.0f", item.tempMax)}°C",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
+            HorizontalSeparator()
         }
     }
 }
@@ -280,6 +311,8 @@ fun WeeklyForecastTable(
 private fun WeeklyForecastTablePreview() {
     WeeklyForecastTable(modifier = Modifier,DailyForecastTestData)
 }
+
+
 //@Composable
 //fun HourlyWeatherItem(weather: HourlyWeather) {
 //    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
