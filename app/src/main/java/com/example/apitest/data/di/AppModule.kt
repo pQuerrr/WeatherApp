@@ -2,13 +2,14 @@ package com.example.apitest.data.di
 
 import com.example.apitest.data.repo.WeatherRepository
 import com.example.apitest.data.service.weatherapiseivice.WeatherApiService
-import com.google.gson.Gson
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
@@ -17,14 +18,16 @@ import javax.inject.Singleton
 object AppModule {
 
     private const val BASE_URL = "https://api.openweathermap.org/"
-    private val gson = Gson()
+
+    val contentType = "application/json".toMediaType()
+    val json = Json { ignoreUnknownKeys = true }
 
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(json.asConverterFactory(contentType))
             .build()
     }
 

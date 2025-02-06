@@ -5,22 +5,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.apitest.presentation.mainscreen.MainScreen
+import com.example.apitest.presentation.mainscreen.view.MainScreen
 import com.example.apitest.presentation.mainscreen.MainScreenViewModel
 import com.example.apitest.ui.theme.APITESTTheme
 import com.example.apitest.utils.Route
 import dagger.hilt.android.AndroidEntryPoint
 
+//TODO
+// 1.Clean Architecture
+// 2.Повторить SOLID, DRY, KISS
+// 3. Аналитика, файрбейз и тд
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainScreenViewModel by viewModels()

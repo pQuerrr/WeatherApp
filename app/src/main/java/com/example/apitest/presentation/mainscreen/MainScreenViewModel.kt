@@ -1,89 +1,84 @@
 package com.example.apitest.presentation.mainscreen
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.apitest.data.DailyForecast
-import com.example.apitest.data.ForecastItem
-import com.example.apitest.data.HourlyWeather
-import com.example.apitest.data.WeatherResponse
 import com.example.apitest.data.repo.WeatherRepository
+import com.example.apitest.data.response.DailyForecast
+import com.example.apitest.data.response.ForecastItem
+import com.example.apitest.data.response.WeatherResponse
+import com.example.apitest.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import javax.inject.Inject
+
+//todo usecase изучить + сделать
+//todo модели презентационного слоя
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     private val repository: WeatherRepository
 ) : ViewModel() {
-    private val _weather = mutableStateOf<Result<WeatherResponse>?>(null)
-    val weather: State<Result<WeatherResponse>?> = _weather
+    private val _weather = MutableStateFlow<Result<WeatherResponse>?>(null)
+    val weather: StateFlow<Result<WeatherResponse>?> =
+        _weather.asStateFlow()//TODO Переделать на флоу, сделать тост
 
-    private val _coordinates = mutableStateOf<Pair<BigDecimal, BigDecimal>?>(null)
-    val coordinates: State<Pair<BigDecimal, BigDecimal>?> = _coordinates
+    private val _forecast = MutableStateFlow<Result<List<ForecastItem>>?>(null)
+    val forecast: StateFlow<Result<List<ForecastItem>>?> get() = _forecast.asStateFlow() //TODO Переделать на флоу
 
-    private val _hourlyWeather = mutableStateOf<Result<List<HourlyWeather>>?>(null)
-    val hourlyWeather: State<Result<List<HourlyWeather>>?> = _hourlyWeather
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> get() = _error.asStateFlow()//TODO Переделать на флоу, сделать тост
 
-    private val _forecast = MutableLiveData<List<ForecastItem>>()
-    val forecast: LiveData<List<ForecastItem>> get() = _forecast
+    private val _weeklyForecast = MutableStateFlow<Result<List<DailyForecast>>?>(null)
+    val weeklyForecast: StateFlow<Result<List<DailyForecast>>?> get() = _weeklyForecast.asStateFlow()
 
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> get() = _error
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage: StateFlow<String?> = _toastMessage.asStateFlow()
 
-    private val _weeklyForecast = MutableLiveData<List<DailyForecast>>()
-    val weeklyForecast: LiveData<List<DailyForecast>> get()= _weeklyForecast
 
     fun fetchWeather(city: String) {
         viewModelScope.launch {
-            _weather.value = repository.getWeather(city)
+            _weather.value = Result.Loading
+            try {
+                val result = repository.getWeather(city)
+                _weather.value = result
+            } catch (e: Exception){
+                _weather.value = Result.Error(e)
+                _toastMessage.value = "Ошибка при загрузке погоды: ${e.message}"
+            }
         }
     }
 
     fun fetchThreeHourForecast(city: String) {
         viewModelScope.launch {
-            val result = repository.getThreeHourForecast(city)
-            result.onSuccess { forecastList ->
-                _forecast.value = forecastList
-            }.onFailure { exception ->
-                _error.value = exception.message
+            _forecast.value = Result.Loading
+            try {
+                val result = repository.getThreeHourForecast(city)
+                _forecast.value = result
+            } catch (e: Exception) {
+                _forecast.value = Result.Error(e)
+                _toastMessage.value = "Ошибка при загрузке прогноза: ${e.message}"
             }
+
         }
     }
 
-    fun fetchWeeklyForecast(city: String){
+    fun fetchWeeklyForecast(city: String) {
         viewModelScope.launch {
-            val result = repository.getWeeklyForecast(city)
-            result.onSuccess { forecast ->
-                _weeklyForecast.value = forecast
-            }.onFailure { exception ->
-                _error.value = exception.message
+            _weeklyForecast.value = Result.Loading
+            try {
+                val result = repository.getWeeklyForecast(city)
+                _weeklyForecast.value = result
+            } catch (e: Exception){
+                _weeklyForecast.value = Result.Error(e)
+                _toastMessage.value = "Ошибка при загрузке недельного прогноза: ${e.message}"
             }
         }
     }
 
-
-
-//    fun fetchHourlyWeatherByCity(city: String){
-//        viewModelScope.launch {
-//            val coordinatesResult = repository.getCityCoordinates(city)
-//            if (coordinatesResult.isSuccess){
-//                val coordinates = coordinatesResult.getOrNull()
-//                if (coordinates != null){
-//                    _coordinates.value = Pair(coordinates.lat,coordinates.lon)
-//                    _hourlyWeather.value = repository.getHourlyWeather(
-//                        coordinates.lat,
-//                        coordinates.lon
-//                    )
-//                }
-//            } else {
-//                    _hourlyWeather.value= Result.failure(coordinatesResult.exceptionOrNull()!!)
-//            }
-//        }
-//    }
-
+    fun resetToast() {
+        _toastMessage.value = null
+    }
 }

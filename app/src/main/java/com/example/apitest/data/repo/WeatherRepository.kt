@@ -1,10 +1,12 @@
 package com.example.apitest.data.repo
 
-import com.example.apitest.data.DailyForecast
-import com.example.apitest.data.ForecastItem
-import com.example.apitest.data.WeatherResponse
+import android.util.Log
+import com.example.apitest.data.response.DailyForecast
+import com.example.apitest.data.response.ForecastItem
+import com.example.apitest.data.response.WeatherResponse
 import com.example.apitest.data.service.weatherapiseivice.WeatherApiService
 import javax.inject.Inject
+import com.example.apitest.utils.Result
 
 class WeatherRepository @Inject constructor(
     private val apiService: WeatherApiService,
@@ -14,12 +16,12 @@ class WeatherRepository @Inject constructor(
         return try {
             val response = apiService.getWeather(city, "metric", "ru", apiKey)
             if (response.isSuccessful) {
-                Result.success(response.body()!!)
+                Result.Success(response.body()!!)
             } else {
-                Result.failure(Exception("Ошибка: ${response.code()}"))
+                Result.Error(Exception("Ошибка: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.Error(e)
         }
     }
 
@@ -27,13 +29,15 @@ class WeatherRepository @Inject constructor(
         return try {
             val response = apiService.getThreeHourForecast(city, apiKey = apiKey)
             if (response.isSuccessful) {
-                val forecastList = response.body()?.list ?: emptyList()
-                Result.success(forecastList)
+                val forecastList = response.body()?.forecastItem ?: emptyList()
+                Log.d("WeeklyForecast", "ForecastList from API: $forecastList")
+
+                Result.Success(forecastList)
             } else {
-                Result.failure(Exception("Error: ${response.errorBody()?.string()}"))
+                Result.Error(Exception("Error: ${response.errorBody()?.string()}"))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.Error(e)
         }
     }
 
@@ -41,7 +45,7 @@ class WeatherRepository @Inject constructor(
         return try {
             val response = apiService.getThreeHourForecast(city,apiKey = apiKey)
             if (response.isSuccessful) {
-                val forecastList = response.body()?.list ?: emptyList()
+                val forecastList = response.body()?.forecastItem ?: emptyList()
 
                 val dailyForecast = forecastList.groupBy {
                     it.dt_txt.substringBefore(" ")
@@ -55,45 +59,12 @@ class WeatherRepository @Inject constructor(
                         .maxByOrNull { it.value }?.key ?:"No data"
                     DailyForecast(date,tempMin,tempMax,description)
                 }
-                Result.success(dailyForecast)
+                Result.Success(dailyForecast)
             }else{
-                Result.failure(Exception("Ошибка: ${response.code()}"))
+                Result.Error(Exception("Ошибка: ${response.code()}"))
             }
         } catch (e: Exception){
-            Result.failure(e)
+            Result.Error(e)
         }
     }
-
-//    suspend fun getCityCoordinates(city: String): Result<CityCoordinates> {
-//        return try {
-//            val response = apiService.getCityCoordinates(city, apiKey = apiKey)
-//            if (response.isSuccessful && !response.body().isNullOrEmpty()) {
-//                Log.d("WeatherRepository", "${response.raw()}")
-//                val coordinates = response.body()!![0]
-//                Log.d(
-//                    "WeatherRepository",
-//                    "Координаты города $city: ${coordinates.lat}, ${coordinates.lon}, ${coordinates.country}, ${coordinates.state}"
-//                )
-//                Result.success(coordinates)
-//            } else {
-//                Log.e("WeatherRepository", "Город не найден или ошибка API: ${response.code()}")
-//                Result.failure(Exception("Город не найдет или другая ошибка)"))
-//            }
-//        } catch (e: Exception) {
-//            Result.failure(e)
-//        }
-//    }
-
-//    suspend fun getHourlyWeather(lat: BigDecimal, lon: BigDecimal): Result<List<HourlyWeather>> {
-//        return try {
-//            val response = apiService.getHourlyWeather(lat, lon, apiKey = apiKey)
-//            if (response.isSuccessful) {
-//                Result.success(response.body()?.hourly ?: emptyList())
-//            } else {
-//                Result.failure(Exception("Ошибка: ${response.code()}"))
-//            }
-//        } catch (e: Exception) {
-//            Result.failure(e)
-//        }
-//    }
 }

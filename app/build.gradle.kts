@@ -4,11 +4,12 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.compose.compiler)
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
 android {
     namespace = "com.example.apitest"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.apitest"
@@ -58,8 +59,8 @@ kapt {
 }
 
 dependencies {
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation(libs.converter.gson)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
@@ -72,7 +73,6 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     implementation ("androidx.compose.material3:material3:1.3.1")
     implementation ("androidx.compose.material3:material3-window-size-class:1.3.1")
-    implementation ("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha06")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
