@@ -1,7 +1,7 @@
-package com.example.apitest.data.service.weatherapiseivice
+package com.example.apitest.data.remote.api
 
-import com.example.apitest.data.response.ThreeHourForecastResponse
-import com.example.apitest.data.response.WeatherResponse
+import com.example.apitest.data.remote.response.ThreeHourForecastResponse
+import com.example.apitest.data.remote.response.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

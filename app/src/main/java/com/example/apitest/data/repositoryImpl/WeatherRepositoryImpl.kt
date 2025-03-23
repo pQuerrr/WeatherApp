@@ -1,22 +1,25 @@
-package com.example.apitest.data.repo
+package com.example.apitest.data.repositoryImpl
 
 import android.util.Log
-import com.example.apitest.data.response.DailyForecast
-import com.example.apitest.data.response.ForecastItem
-import com.example.apitest.data.response.WeatherResponse
-import com.example.apitest.data.service.weatherapiseivice.WeatherApiService
+import com.example.apitest.data.remote.response.DailyForecast
+import com.example.apitest.data.remote.response.ForecastItem
+import com.example.apitest.data.remote.response.WeatherResponse
+import com.example.apitest.data.remote.api.WeatherApiService
+import com.example.apitest.domain.repository.WeatherRepository
 import javax.inject.Inject
 import com.example.apitest.utils.Result
 
-class WeatherRepository @Inject constructor(
+class WeatherRepositoryImpl @Inject constructor(
     private val apiService: WeatherApiService,
     private val apiKey: String
-) {
-    suspend fun getWeather(city: String): Result<WeatherResponse> {
+): WeatherRepository {
+    override suspend fun getWeather(city: String): Result<WeatherResponse> {
         return try {
             val response = apiService.getWeather(city, "metric", "ru", apiKey)
             if (response.isSuccessful) {
-                Result.Success(response.body()!!)
+               response.body()?.let { weatherResponse ->
+                   Result.Success(weatherResponse)
+               } ?: Result.Error(Exception("Ошибка от сервера?"))
             } else {
                 Result.Error(Exception("Ошибка: ${response.code()}"))
             }
@@ -25,7 +28,7 @@ class WeatherRepository @Inject constructor(
         }
     }
 
-    suspend fun getThreeHourForecast(city: String): Result<List<ForecastItem>> {
+    override suspend fun getThreeHourForecast(city: String): Result<List<ForecastItem>> {
         return try {
             val response = apiService.getThreeHourForecast(city, apiKey = apiKey)
             if (response.isSuccessful) {
@@ -41,7 +44,7 @@ class WeatherRepository @Inject constructor(
         }
     }
 
-    suspend fun getWeeklyForecast(city: String):Result<List<DailyForecast>>{
+    override suspend fun getWeeklyForecast(city: String):Result<List<DailyForecast>>{
         return try {
             val response = apiService.getThreeHourForecast(city,apiKey = apiKey)
             if (response.isSuccessful) {

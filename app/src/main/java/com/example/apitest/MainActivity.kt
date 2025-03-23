@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.apitest.presentation.mainscreen.view.MainScreen
-import com.example.apitest.presentation.mainscreen.MainScreenViewModel
+import com.example.apitest.presentation.mainscreen.viewmodel.MainScreenViewModel
 import com.example.apitest.ui.theme.APITESTTheme
 import com.example.apitest.utils.Route
 import dagger.hilt.android.AndroidEntryPoint

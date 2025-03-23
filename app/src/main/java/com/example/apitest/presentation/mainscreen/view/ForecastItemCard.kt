@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
-import com.example.apitest.data.response.ForecastItem
+import com.example.apitest.data.remote.response.ForecastItem
 
 @SuppressLint("DefaultLocale")
 @Composable

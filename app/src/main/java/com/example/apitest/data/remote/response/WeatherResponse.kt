@@ -1,4 +1,4 @@
-package com.example.apitest.data.response
+package com.example.apitest.data.remote.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

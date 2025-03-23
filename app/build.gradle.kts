@@ -21,6 +21,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+            kapt {
+                arguments {arg("room.schemaLocation", "$projectDir/schemas")}
+            }
         }
     }
 
@@ -59,6 +62,13 @@ kapt {
 }
 
 dependencies {
+    //ROOM
+    implementation("androidx.room:room-runtime")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    //SQLite
+    implementation("androidx.sqlite:sqlite")
+
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
