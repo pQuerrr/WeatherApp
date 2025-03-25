@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.apitest.data.local.entities.CitiesInfoTuple
 import com.example.apitest.presentation.components.cards.ErrorCard
+import com.example.apitest.presentation.components.indicators.LoadingIndicator
 import com.example.apitest.presentation.mainscreen.viewmodel.FindCityViewModel
 import com.example.apitest.presentation.mainscreen.viewstate.MainScreenViewState
 import kotlinx.coroutines.launch
@@ -89,23 +90,19 @@ fun FindCity(
         }
         when (val state = viewState) {
             is MainScreenViewState.CitiesLoaded -> {
-                LazyColumn {
-                    items(state.citiesList) { item ->
-                        FindCityItem(
-                            onDeleteCityButtonClick = {
-                                coroutineScope.launch {
-                                    viewModel.deleteFromDB(item)
-                                    viewModel.loadCities()
-                                }
-                            },
-                            onChooseCityButtonClick = {
-                                city = item.city
-                                viewModel.saveCityIdToPref(item.id)
-                            },
-                            cityItem = item
-                        )
+                CitiesList(
+                    cities = state.citiesList,
+                    onDelete = { city ->
+                        coroutineScope.launch {
+                            viewModel.deleteFromDB(city)
+                            viewModel.loadCities()
+                        }
+                    },
+                    onSelected = {citySelected ->
+                        city = citySelected.city
+                        viewModel.saveCityIdToPref(citySelected.id)
                     }
-                }
+                )
             }
 
             is MainScreenViewState.Error -> {
@@ -114,7 +111,7 @@ fun FindCity(
                     onRetry = { viewModel.loadCities() }
                 )
             }
-
+            is MainScreenViewState.Loading -> LoadingIndicator()
             else -> {}
         }
     }
