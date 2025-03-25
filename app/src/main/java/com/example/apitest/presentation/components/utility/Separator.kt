@@ -1,4 +1,4 @@
-package com.example.apitest.presentation.utility
+package com.example.apitest.presentation.components.utility
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

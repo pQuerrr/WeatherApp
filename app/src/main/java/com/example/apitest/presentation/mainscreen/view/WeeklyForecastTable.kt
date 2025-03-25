@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.apitest.data.remote.response.DailyForecast
-import com.example.apitest.presentation.utility.HorizontalSeparator
+import com.example.apitest.presentation.components.utility.HorizontalSeparator
 import com.example.apitest.utils.Result
 
 @SuppressLint("DefaultLocale")

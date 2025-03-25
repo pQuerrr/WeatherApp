@@ -2,13 +2,11 @@ package com.example.apitest.presentation.mainscreen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.apitest.data.local.entities.CitiesInfoTuple
 import com.example.apitest.data.local.preferences.CityPreferences
-import com.example.apitest.data.remote.response.DailyForecast
-import com.example.apitest.data.remote.response.ForecastItem
-import com.example.apitest.data.remote.response.WeatherResponse
 import com.example.apitest.domain.repository.CitiesRepository
 import com.example.apitest.domain.repository.WeatherRepository
+import com.example.apitest.domain.usecase.GetWeatherDataUseCase
+import com.example.apitest.domain.usecase.LoadCitiesListUseCase
 import com.example.apitest.presentation.mainscreen.viewstate.MainScreenViewState
 import com.example.apitest.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,62 +21,43 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    private val weatherRepository: WeatherRepository,
     private val citiesRepository: CitiesRepository,
-    private val cityPreferences: CityPreferences
+    private val cityPreferences: CityPreferences,
+    private val getWeatherDataUseCase: GetWeatherDataUseCase
 ) : ViewModel() {
+
     private val _viewState = MutableStateFlow<MainScreenViewState>(MainScreenViewState.Loading)
     val viewState: StateFlow<MainScreenViewState> = _viewState.asStateFlow()
 
-    init {
-        loadCities()
-    }
-
-    fun loadCities() {
-        viewModelScope.launch {
-            _viewState.value = MainScreenViewState.Loading
-            try {
-                val citiesList = citiesRepository.getAllCitiesData()
-                _viewState.value = MainScreenViewState.CitiesLoaded(citiesList)
-            } catch (e: Exception){
-                _viewState.value = MainScreenViewState.Error("Ошибка при загрузке из БД: ${e.message}")
-            }
-        }
-    }
+    private val _cityId = MutableStateFlow(cityPreferences.getCityId())
+    val cityId: StateFlow<Long?> = _cityId.asStateFlow()
 
     fun fetchWeather(city: String?) {
         city?.let {
             viewModelScope.launch {
                 _viewState.value = MainScreenViewState.Loading
-                try {
-                    val weatherResult = weatherRepository.getWeather(city)
-                    val forecastResult = weatherRepository.getThreeHourForecast(city)
-                    val weeklyResult = weatherRepository.getWeeklyForecast(city)
-                    if (weatherResult is Result.Success && forecastResult is Result.Success && weeklyResult is Result.Success) {
+                when (val result = getWeatherDataUseCase(city)) {
+                    is Result.Success -> {
                         _viewState.value = MainScreenViewState.Success(
-                            city = city,
-                            weather = weatherResult.data,
-                            forecast = forecastResult.data,
-                            weeklyForecast = weeklyResult.data
+                            city = result.data.city,
+                            weather = result.data.weather,
+                            forecast = result.data.forecast,
+                            weeklyForecast = result.data.weeklyForecast
                         )
-                    } else {
-                        val errorMessage = when {
-                            weatherResult is Result.Error -> "Ошибка при загрузке погоды: ${weatherResult.exception.message}"
-                            forecastResult is Result.Error -> "Ошибка при загрузке прогноза: ${forecastResult.exception.message}"
-                            weeklyResult is Result.Error -> "Ошибка при загрузке недельного прогноза: ${weeklyResult.exception.message}"
-                            else -> "Неизвестная ошибка"
-                        }
-                        _viewState.value = MainScreenViewState.Error(errorMessage)
                     }
-                } catch (e: Exception) {
-                    _viewState.value =
-                        MainScreenViewState.Error("Ошибка получея данных: ${e.message}")
+
+                    is Result.Error -> {
+                        _viewState.value = MainScreenViewState.Error(
+                            result.exception.message ?: "Неизвестная ошибка"
+                        )
+                    }
                 }
             }
         }
     }
 
-    fun resetViewState(){
+
+    fun resetViewState() {
         _viewState.value = MainScreenViewState.Idle
     }
 
@@ -98,5 +77,16 @@ class MainScreenViewModel @Inject constructor(
 
     fun getCityIdFromPref(): Long? {
         return cityPreferences.getCityId()
+    }
+
+    fun deleteIdFromPref() {
+        cityPreferences.clearCityId()
+    }
+
+    fun clearCitySelection(){
+        viewModelScope.launch {
+            cityPreferences.clearCityId()
+            _cityId.value = null
+        }
     }
 }

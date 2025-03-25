@@ -1,89 +1,61 @@
 package com.example.apitest.presentation.mainscreen.view
 
-import WeeklyForecastTable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.apitest.data.remote.response.Main
+import com.example.apitest.presentation.components.cards.ErrorCard
+import com.example.apitest.presentation.components.indicators.LoadingIndicator
 import com.example.apitest.presentation.mainscreen.viewmodel.MainScreenViewModel
 import com.example.apitest.presentation.mainscreen.viewstate.MainScreenViewState
-import kotlinx.coroutines.selects.select
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
     val viewState by viewModel.viewState.collectAsState()
-    val cityId = viewModel.getCityIdFromPref()
+    val cityId by viewModel.cityId.collectAsState()
     var showFindCity by remember { mutableStateOf(cityId == null) }
 
-    if (showFindCity) {
-        LaunchedEffect(Unit) {
+    LaunchedEffect(cityId) {
+        if (cityId == null) {
             viewModel.resetViewState()
-            viewModel.loadCities()
-        }
-        FindCity(
-            onCitySelected = { selectedCity ->
-                showFindCity = false
-                viewModel.fetchWeather(selectedCity)
-            })
-    } else {
-        LaunchedEffect(cityId) {
+            showFindCity = true
+        } else {
             viewModel.getCityById(cityId)
         }
+    }
+
+    if (showFindCity) {
+        FindCity(
+            onCitySelected = { selectedCity ->
+                viewModel.fetchWeather(selectedCity)
+                showFindCity = false
+            })
+    } else {
         Column {
-            when (val state = viewState) {
-                is MainScreenViewState.Success -> {
-                    CityButton(cityName = state.city,
-                        onClick = { showFindCity = true }
-                    )
+            CityButton(
+                cityName = when (val state = viewState) {
+                    is MainScreenViewState.Success -> state.city
+                    is MainScreenViewState.CitySelected -> state.city.city
+                    else -> "Выберите город"
+                },
+                onClick = {
+                    viewModel.clearCitySelection()
+                    showFindCity = true
                 }
-
-                is MainScreenViewState.CitySelected -> {
-                    val cityName = state.city.city
-                    CityButton(cityName = cityName,
-                        onClick = { showFindCity = true }
-                    )
-                }
-
-                else -> {
-                    CityButton(cityName = "Выберите город", onClick = { showFindCity = true })
-                }
-            }
+            )
 
             when (val state = viewState) {
                 is MainScreenViewState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                    LoadingIndicator()
                 }
 
                 is MainScreenViewState.Success -> {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        MainTemperature(weather = state.weather, city = state.city)
-                        ForecastList(forecast = state.forecast)
-                        WeeklyForecastTable(weeklyForecast = state.weeklyForecast)
-                    }
+                    MainScreenWeatherContent(state)
                 }
 
                 is MainScreenViewState.CitySelected -> {
@@ -93,24 +65,15 @@ fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
                     }
                 }
 
-                is MainScreenViewState.Error -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = state.message, color = Color.Red)
-                        Button(onClick = {
-                            viewModel.resetViewState()
-                            showFindCity = true
-                        }) {
-                            Text("Попробовать снова")
-                        }
+                is MainScreenViewState.Error -> ErrorCard(
+                    message = state.message,
+                    onRetry = {
+                        viewModel.clearCitySelection()
+                        viewModel.resetViewState()
+                        showFindCity = true
                     }
-                }
-                is MainScreenViewState.Idle -> { }
+                )
+
                 else -> {}
             }
         }
