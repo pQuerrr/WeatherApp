@@ -37,7 +37,7 @@ fun ForecastList(
 
 @Preview(showBackground = true)
 @Composable
-fun ForecastListPreview_Success() {
+fun ForecastListPreview() {
     val testForecastList = listOf(
         ForecastItem(
             dt = 1674120000L,

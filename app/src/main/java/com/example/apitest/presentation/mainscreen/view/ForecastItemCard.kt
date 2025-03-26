@@ -12,10 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 import com.example.apitest.data.remote.response.ForecastItem
+import com.example.apitest.data.remote.response.MainForecast
+import com.example.apitest.data.remote.response.WeatherForecast
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -66,3 +69,27 @@ fun ForecastItemCard(
 }
 
 fun getIconUrl(iconId: String) = "https://openweathermap.org/img/wn/$iconId@2x.png"
+
+@Preview
+@Composable
+private fun ForecastItemCardPreview() {
+    ForecastItemCard(
+        forecastItem = ForecastItem(
+            dt = 10000,
+            dt_txt = "22.10.2001",
+            main = MainForecast(
+                temp_max = 2.0,
+                temp_min = 2.0,
+                temp = 2.0,
+                feels_like = 2.0,
+                pressure = 2,
+                humidity = 2),
+            weather = listOf(WeatherForecast(
+                main = "asd",
+                description = "asd",
+                icon = "asd"))
+        ),
+        time = "10.10.2001" ,
+        date = ""
+    )
+}

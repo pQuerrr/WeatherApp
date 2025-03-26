@@ -1,10 +1,10 @@
-package com.example.apitest.presentation.mainscreen.view
+package com.example.apitest.presentation.findcityscreen.view
 
-import android.telephony.AccessNetworkConstants.UtranBand
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.apitest.data.local.entities.CitiesInfoTuple
 
 @Composable
@@ -28,3 +28,11 @@ fun CitiesList(
     }
 }
 
+@Preview
+@Composable
+private fun CitiesListPreview() {
+    CitiesList(
+        cities = listOf(CitiesInfoTuple(1, "Yalta"),CitiesInfoTuple(2,"Moscow")),
+        onDelete = {},
+        onSelected = {})
+}

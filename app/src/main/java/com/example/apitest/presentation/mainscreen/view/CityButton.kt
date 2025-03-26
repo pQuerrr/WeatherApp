@@ -54,7 +54,5 @@ fun CityButton(
 @Preview
 @Composable
 private fun CityButtonPreview() {
-    CityButton(cityName = "Yalta") {
-        
-    }
+    CityButton(cityName = "Yalta") {}
 }

@@ -64,7 +64,7 @@ fun MainTemperature(
 
 @Preview(showBackground = true)
 @Composable
-fun MainTemperaturePreview_Success() {
+fun MainTemperaturePreview() {
     val previewWeatherResponse = WeatherResponse(
         main = Main(
             temp = 15.0,

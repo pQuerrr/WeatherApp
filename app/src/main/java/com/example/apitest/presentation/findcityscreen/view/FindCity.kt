@@ -1,13 +1,13 @@
-package com.example.apitest.presentation.mainscreen.view
+package com.example.apitest.presentation.findcityscreen.view
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -23,13 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.apitest.data.local.entities.CitiesInfoTuple
 import com.example.apitest.presentation.components.cards.ErrorCard
+import com.example.apitest.presentation.components.cards.SearchField
 import com.example.apitest.presentation.components.indicators.LoadingIndicator
-import com.example.apitest.presentation.mainscreen.viewmodel.FindCityViewModel
+import com.example.apitest.presentation.findcityscreen.viewmodel.FindCityViewModel
 import com.example.apitest.presentation.mainscreen.viewstate.MainScreenViewState
 import kotlinx.coroutines.launch
 
@@ -49,41 +48,21 @@ fun FindCity(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
         ) {
-            OutlinedTextField(
-                value = city,
-                onValueChange = { city = it },
-                label = {
-                    Text(
-                        text = "Введите название города"
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                trailingIcon = {
-                    IconButton(
-                        modifier = Modifier
-                            .padding(0.dp),
-                        onClick = {
-                            if (city.isNotBlank()) {
-                                viewModel.onCitySelected(city)
-                                onCitySelected(city)
-                            }
-                        },
-                    ) {
-
-                        Icon(
-                            Icons.Filled.Search,
-                            contentDescription = " Поиск",
-                            modifier = Modifier
-                                .fillMaxSize()
-                        )
+            SearchField(
+                value = city ,
+                onValueChange = {city = it},
+                onSearch = {
+                    if (city.isNotBlank()){
+                        viewModel.onCitySelected(city)
+                        onCitySelected(city)
                     }
                 }
             )
@@ -93,10 +72,7 @@ fun FindCity(
                 CitiesList(
                     cities = state.citiesList,
                     onDelete = { city ->
-                        coroutineScope.launch {
-                            viewModel.deleteFromDB(city)
-                            viewModel.loadCities()
-                        }
+                        viewModel.onDeleteCityClick(city)
                     },
                     onSelected = {citySelected ->
                         city = citySelected.city
@@ -108,7 +84,9 @@ fun FindCity(
             is MainScreenViewState.Error -> {
                 ErrorCard(
                     message = state.message,
-                    onRetry = { viewModel.loadCities() }
+                    onRetry = {
+                        viewModel.loadCities()
+                    }
                 )
             }
             is MainScreenViewState.Loading -> LoadingIndicator()
@@ -116,21 +94,3 @@ fun FindCity(
         }
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-private fun FindCityPreview() {
-    FindCity(onCitySelected = {})
-}
-
-val previewCitiesList = listOf(
-    CitiesInfoTuple(
-        city = "Moscow",
-        id = 1
-    ),
-    CitiesInfoTuple(
-        city = "Yalta",
-        id = 2
-    )
-)
