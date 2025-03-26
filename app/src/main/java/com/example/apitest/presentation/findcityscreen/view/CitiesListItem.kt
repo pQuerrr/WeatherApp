@@ -27,12 +27,12 @@ fun CitiesListItem(
     onDelete: () -> Unit,
     onSelect: () -> Unit
 ) {
-    Row (
+    Row(
         modifier = modifier
             .height(48.dp)
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             text = city.city,
             textAlign = TextAlign.Left,
@@ -47,7 +47,7 @@ fun CitiesListItem(
             onClick = onDelete,
             modifier = Modifier
                 .size(48.dp)
-            ) {
+        ) {
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "Удаление",
@@ -62,7 +62,7 @@ fun CitiesListItem(
 @Composable
 private fun CitiesListItemPreview() {
     CitiesListItem(
-        city = CitiesInfoTuple(1,"Yalta"),
+        city = CitiesInfoTuple(1, "Yalta"),
         onDelete = {}) {
 
     }
