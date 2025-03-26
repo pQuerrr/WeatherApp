@@ -40,5 +40,15 @@ class CitiesRepositoryImpl @Inject constructor(
         }
     }
 
-
+//    override suspend fun getFavorites(): List<CitiesInfoTuple>{
+//        return  withContext(Dispatchers.IO){
+//            return@withContext citiesDao.getFavorites()
+//        }
+//    }
+//
+//    override suspend fun setFavorite(cityId: Long, isFavorite: Boolean){
+//        withContext(Dispatchers.IO){
+//            citiesDao.setFavorite(cityId, isFavorite)
+//        }
+//    }
 }

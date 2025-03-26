@@ -12,5 +12,6 @@ import androidx.room.PrimaryKey
 )
 data class CitiesDbEntity(
     @PrimaryKey(autoGenerate = true) val id : Long? = null,
-    @ColumnInfo(name = "city") val city : String
+    @ColumnInfo(name = "city") val city : String,
+//    @ColumnInfo(name = "isFavorite") val isFavorite : Boolean = false
 )

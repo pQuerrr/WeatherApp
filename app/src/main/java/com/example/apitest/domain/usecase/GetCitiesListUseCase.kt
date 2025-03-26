@@ -5,7 +5,7 @@ import com.example.apitest.domain.repository.CitiesRepository
 import javax.inject.Inject
 import com.example.apitest.utils.Result
 
-class LoadCitiesListUseCase @Inject constructor(
+class GetCitiesListUseCase @Inject constructor(
     private val citiesRepository: CitiesRepository
 ) {
     suspend operator fun invoke(): Result<List<CitiesInfoTuple>>{
@@ -17,4 +17,3 @@ class LoadCitiesListUseCase @Inject constructor(
         }
     }
 }
-

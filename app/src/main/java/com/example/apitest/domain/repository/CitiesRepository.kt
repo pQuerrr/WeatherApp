@@ -9,4 +9,6 @@ interface CitiesRepository {
     suspend fun getAllCitiesData(): List<CitiesInfoTuple>
     suspend fun deleteCitiesDataById(id: Long)
     suspend fun getCityById(id: Long): CitiesInfoTuple
+//    suspend fun getFavorites(): List<CitiesInfoTuple>
+//    suspend fun setFavorite(cityId: Long, isFavorite: Boolean)
 }

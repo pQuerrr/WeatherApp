@@ -7,7 +7,9 @@ import com.example.apitest.data.local.entities.CitiesInfoTuple
 import com.example.apitest.data.local.preferences.CityPreferences
 import com.example.apitest.domain.usecase.ChooseCityUseCase
 import com.example.apitest.domain.usecase.DeleteFromDBUseCase
-import com.example.apitest.domain.usecase.LoadCitiesListUseCase
+import com.example.apitest.domain.usecase.GetCitiesListAndWeatherForFirstUseCase
+import com.example.apitest.domain.usecase.GetCitiesListUseCase
+import com.example.apitest.presentation.findcityscreen.viewstate.FindCityViewState
 import com.example.apitest.presentation.mainscreen.viewstate.MainScreenViewState
 import com.example.apitest.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +25,11 @@ class FindCityViewModel @Inject constructor(
     private val cityPreferences: CityPreferences,
     private val chooseCityUseCase: ChooseCityUseCase,
     private val deleteFromDBUseCase: DeleteFromDBUseCase,
-    private val loadCitiesListUseCase: LoadCitiesListUseCase
+    private val getCitiesListUseCase: GetCitiesListUseCase
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow<MainScreenViewState>(MainScreenViewState.Loading)
-    val viewState: StateFlow<MainScreenViewState> = _viewState.asStateFlow()
+    private val _viewState = MutableStateFlow<FindCityViewState>(FindCityViewState.Loading)
+    val viewState: StateFlow<FindCityViewState> = _viewState.asStateFlow()
     fun saveCityIdToPref(cityId: Long) {
         cityPreferences.saveCityId(cityId)
     }
@@ -57,14 +59,14 @@ class FindCityViewModel @Inject constructor(
     }
 
     private suspend fun getCitiesList() {
-        _viewState.value = MainScreenViewState.Loading
-        when (val result = loadCitiesListUseCase()) {
+        _viewState.value = FindCityViewState.Loading
+        when (val result = getCitiesListUseCase()) {
             is Result.Success -> {
-                _viewState.value = MainScreenViewState.CitiesLoaded(result.data)
+                _viewState.value = FindCityViewState.Success(result.data)
             }
             is Result.Error -> {
                 _viewState.value =
-                    MainScreenViewState.Error(result.exception.message ?: "Не известная ошибка")
+                    FindCityViewState.Error(result.exception.message ?: "Не известная ошибка")
             }
         }
     }

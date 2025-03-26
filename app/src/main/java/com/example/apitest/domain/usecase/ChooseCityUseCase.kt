@@ -7,21 +7,13 @@ import java.security.PrivateKey
 import javax.inject.Inject
 
 class ChooseCityUseCase @Inject constructor (
-    private val citiesRepository: CitiesRepository,
-    private val citiesPreferences: CityPreferences,
+    private val citiesRepository: CitiesRepository
 ){
  suspend operator fun invoke(cityName: String){
      val cityId = citiesRepository.getUniqueCity(cityName)?.id
-
      if (cityId == null){
          val city = CitiesDbEntity(city = cityName)
          citiesRepository.insertNewCitiesData(city)
-         val newCityId = citiesRepository.getUniqueCity(cityName)?.id
-         if (newCityId != null){
-             citiesPreferences.saveCityId(cityId = newCityId)
-         }
-     } else {
-         citiesPreferences.saveCityId(cityId)
      }
  }
 }

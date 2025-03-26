@@ -18,10 +18,15 @@ interface CitiesDao {
     @Query("DELETE FROM cities WHERE id = :citiesId")
     fun deleteCitiesDataById(citiesId: Long)
 
-    @Query("SELECT * FROM cities where city = :cityName")
+    @Query("SELECT * FROM cities WHERE city = :cityName")
     fun getUniqueCity(cityName: String): CitiesInfoTuple?
 
-    @Query("SELECT * FROM cities where id = :cityId")
+    @Query("SELECT * FROM cities WHERE id = :cityId")
     fun getCityById(cityId: Long) : CitiesInfoTuple
 
+//    @Query("SELECT * FROM cities WHERE isFavorite = 1")
+//    fun getFavorites(): List<CitiesInfoTuple>
+//
+//    @Query("UPDATE cities SET isFavorite = :isFavorite WHERE id = :cityId")
+//    fun setFavorite(cityId: Long, isFavorite: Boolean)
 }
