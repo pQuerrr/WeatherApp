@@ -33,16 +33,20 @@ fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
         (viewState as? MainScreenViewState.Success)?.citiesList?.size ?: 0
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getCitiesAndFetchWeatherForFirst()
+    LaunchedEffect(showFindCity) {
+        if (!showFindCity){
+        viewModel.getCitiesAndFetchWeather()
+        }
     }
+
 
     if (showFindCity) {
         FindCity(
             onCitySelected = { selectedCity ->
-                viewModel.fetchWeather(selectedCity)
+                viewModel.getCitiesAndFetchWeather()
                 showFindCity = false
-            })
+            },
+            onBackClick = {showFindCity = false})
     } else {
         Column (
             modifier = Modifier
@@ -53,7 +57,6 @@ fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
             CityButton(
                 cityName = "Найти город",
                 onClick = {
-                    viewModel.clearCitySelection()
                     showFindCity = true
                 }
             )
@@ -62,38 +65,44 @@ fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
                 is MainScreenViewState.Loading -> {
                     LoadingIndicator()
                 }
-                is MainScreenViewState.Error -> ErrorCard(
-                    message = state.message,
-                    onRetry = {
-                        viewModel.clearCitySelection()
-                        viewModel.resetViewState()
-                        showFindCity = true
+                is MainScreenViewState.Error -> {
+                    val isEmptyListError = state.message.contains("Список городов пуст")
+                    if (isEmptyListError) {
+                        LaunchedEffect(isEmptyListError) {
+                            viewModel.resetViewState()
+                            showFindCity = isEmptyListError
+                        }
+                    } else {
+                        ErrorCard(
+                            message = state.message,
+                            onRetry = {
+                                showFindCity = true
+                                viewModel.resetViewState()
+                            }
+                        )
                     }
-                )
+                }
                 is MainScreenViewState.Success -> {
+                    when {
+                        state.citiesWeatherData.isEmpty() -> {
+                            LaunchedEffect (Unit) {
+                                showFindCity = true
+                            }
+                        }
+                    }
                     if (state.citiesList.isNotEmpty()){
                         LaunchedEffect(state.citiesList.size) {
                             if (pagerState.pageCount != state.citiesList.size){
                                 pagerState.scrollToPage(0)
                             }
                         }
-                        LaunchedEffect(pagerState.currentPage) {
-                            delay(300)
-                            val currentCity = state.citiesList[pagerState.currentPage].city
-                            if (currentCity != lastFetchedCity) {
-                                lastFetchedCity = currentCity
-                                viewModel.fetchWeather(currentCity)
-                            }
-                        }
-                        HorizontalPager(
-                            state = pagerState,
-                        ) { page ->
-                            val cityData = state.citiesList[page]
+                        HorizontalPager(state = pagerState) { page ->
+                            val cityData = state.citiesWeatherData[page]
                             WeatherContent(
                                 city = cityData.city,
-                                weather = state.weather,
-                                forecast = state.forecast,
-                                weeklyForecast = state.weeklyForecast
+                                weather = state.citiesWeatherData[page].main,
+                                forecast = state.citiesWeatherData[page].forecast,
+                                weeklyForecast = state.citiesWeatherData[page].weeklyForecast
                             )
                         }
                     } else showFindCity = true

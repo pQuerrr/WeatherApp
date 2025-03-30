@@ -29,7 +29,7 @@ class BottomSheetCityInfoViewModel @Inject constructor(
                     is Result.Success -> {
                         _viewState.value = BottomSheetCityInfoViewState.Success(
                             city = result.data.city,
-                            weather = result.data.weather,
+                            weather = result.data.main,
                             forecast = result.data.forecast,
                             weeklyForecast = result.data.weeklyForecast
                         )

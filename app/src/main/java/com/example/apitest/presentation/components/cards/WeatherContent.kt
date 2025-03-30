@@ -39,15 +39,6 @@ fun WeatherContent(
     }
 }
 
-@Composable
-fun WeatherContent(state: MainScreenViewState.Success) {
-    WeatherContent(
-        city = state.city,
-        weather = state.weather,
-        forecast = state.forecast,
-        weeklyForecast = state.weeklyForecast
-    )
-}
 
 @Composable
 fun WeatherContent(state: BottomSheetCityInfoViewState.Success) {

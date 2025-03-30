@@ -1,19 +1,15 @@
 package com.example.apitest.presentation.findcityscreen.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.apitest.data.local.entities.CitiesInfoTuple
 import com.example.apitest.data.local.preferences.CityPreferences
 import com.example.apitest.domain.usecase.ChooseCityUseCase
 import com.example.apitest.domain.usecase.DeleteFromDBUseCase
-import com.example.apitest.domain.usecase.GetCitiesListAndWeatherForFirstUseCase
 import com.example.apitest.domain.usecase.GetCitiesListUseCase
 import com.example.apitest.presentation.findcityscreen.viewstate.FindCityViewState
-import com.example.apitest.presentation.mainscreen.viewstate.MainScreenViewState
 import com.example.apitest.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
