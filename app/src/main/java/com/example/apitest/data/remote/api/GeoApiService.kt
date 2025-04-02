@@ -8,8 +8,8 @@ import retrofit2.http.Query
 interface GeoApiService {
     @GET("geo/1.0/reverse")
     suspend fun getCityName(
-        @Query("lat") latitude : Long,
-        @Query("lon") longitude : Long,
+        @Query("lat") latitude : Double,
+        @Query("lon") longitude : Double,
         @Query("limit") limit : Long,
         @Query("appid") apiKey: String
     ) : Response<List<GeoResponse>>

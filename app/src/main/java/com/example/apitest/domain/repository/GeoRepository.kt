@@ -4,5 +4,5 @@ import com.example.apitest.data.remote.response.GeoResponse
 import com.example.apitest.utils.Result
 
 interface GeoRepository {
-    suspend fun getCityName(lat: Long, lon: Long, limit: Long): Result<GeoResponse>
+    suspend fun getCityName(lat: Double, lon: Double, limit: Long): Result<GeoResponse>
 }

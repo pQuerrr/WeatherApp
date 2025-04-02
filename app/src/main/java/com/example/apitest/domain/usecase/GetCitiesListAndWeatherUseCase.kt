@@ -29,16 +29,16 @@ class GetCitiesListAndWeatherUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<WeatherAndCitiesData> {
         return try {
-            val location =getCurrentLocation() ?: return Result.Error(Exception("Не удалось получить местоположение"))
+            val location = getCurrentLocation() ?: return Result.Error(Exception("Не удалось получить местоположение"))
 
             val cityResult = geoRepository.getCityName(
-                lat = location.latitude.toLong(),
-                lon = location.longitude.toLong(),
+                lat = location.latitude.toDouble(),
+                lon = location.longitude.toDouble(),
                 limit = 1
             )
 
             val currentCity = when (cityResult){
-                is Result.Success -> cityResult.data.name
+                is Result.Success -> cityResult.data.localNames?.get("ru")
                 is Result.Error -> return Result.Error(Exception("Не удалось определить город: ${cityResult.exception.message}"))
             }
 
@@ -47,7 +47,7 @@ class GetCitiesListAndWeatherUseCase @Inject constructor(
             existingCities.removeAll { it.city == currentCity }
 
             val citiesList = mutableListOf<CitiesInfoTuple>().apply {
-                add(CitiesInfoTuple(city = currentCity, id = null))
+                currentCity?.let { CitiesInfoTuple(city = it, id = null) }?.let { add(it) }
                 addAll(existingCities)
             }
 

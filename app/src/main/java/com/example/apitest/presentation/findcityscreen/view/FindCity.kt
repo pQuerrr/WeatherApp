@@ -121,6 +121,9 @@ fun FindCity(
                     onSelected = { citySelected ->
                         city = citySelected.city
                         citySelected.id?.let { viewModel.saveCityIdToPref(it) }
+                        if (city.isNotBlank()) {
+                            showBottomSheet = true
+                        }
                     }
                 )
             }

@@ -10,7 +10,7 @@ class GeoRepositoryImpl @Inject constructor(
     private val apiService:GeoApiService,
     private val apiKey: String
 ): GeoRepository {
-    override suspend fun getCityName(lat: Long, lon: Long, limit: Long): Result<GeoResponse> {
+    override suspend fun getCityName(lat: Double, lon: Double, limit: Long): Result<GeoResponse> {
         return try {
         val response = apiService.getCityName(lat, lon, limit, apiKey)
         if (response.isSuccessful) {

@@ -10,6 +10,7 @@ import com.example.apitest.domain.usecase.GetCitiesListUseCase
 import com.example.apitest.presentation.findcityscreen.viewstate.FindCityViewState
 import com.example.apitest.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,13 +39,13 @@ class FindCityViewModel @Inject constructor(
 
 
     fun loadCities() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getCitiesList()
         }
     }
 
     fun onDeleteCityClick(city: CitiesInfoTuple) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             deleteFromDB(city)
             loadCities()
         }
