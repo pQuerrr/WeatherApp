@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -25,12 +23,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.apitest.presentation.bottomsheetcityinfoscreen.view.BottomSheetCityInfo
@@ -43,7 +38,6 @@ import com.example.apitest.presentation.findcityscreen.viewstate.FindCityViewSta
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FindCity(
-    modifier: Modifier = Modifier,
     viewModel: FindCityViewModel = hiltViewModel(),
     onCitySelected: (String) -> Unit,
     onBackClick: () -> Unit
@@ -54,7 +48,6 @@ fun FindCity(
     var showBottomSheet by remember { mutableStateOf(false) }
     val viewState by viewModel.viewState.collectAsState()
     var city by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.loadCities()

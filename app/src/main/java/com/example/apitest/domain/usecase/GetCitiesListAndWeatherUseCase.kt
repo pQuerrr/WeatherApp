@@ -8,12 +8,14 @@ import com.example.apitest.domain.repository.CitiesRepository
 import com.example.apitest.domain.repository.WeatherRepository
 import javax.inject.Inject
 import com.example.apitest.utils.Result
+import okhttp3.Dispatcher
 
 class GetCitiesListAndWeatherUseCase @Inject constructor(
     private val citiesRepository: CitiesRepository,
     private val weatherRepository: WeatherRepository
 ) {
     suspend operator fun invoke(): Result<WeatherAndCitiesData> {
+        
         return try {
             val citiesList = citiesRepository.getAllCitiesData()
             if (citiesList.isEmpty()) {

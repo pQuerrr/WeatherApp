@@ -22,13 +22,11 @@ import com.example.apitest.presentation.components.indicators.LoadingIndicator
 import com.example.apitest.presentation.findcityscreen.view.FindCity
 import com.example.apitest.presentation.mainscreen.viewmodel.MainScreenViewModel
 import com.example.apitest.presentation.mainscreen.viewstate.MainScreenViewState
-import kotlinx.coroutines.delay
 
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
     val viewState by viewModel.viewState.collectAsState()
     var showFindCity by remember { mutableStateOf(false) }
-    var lastFetchedCity by remember { mutableStateOf<String?>(null) }
     val pagerState = rememberPagerState {
         (viewState as? MainScreenViewState.Success)?.citiesList?.size ?: 0
     }

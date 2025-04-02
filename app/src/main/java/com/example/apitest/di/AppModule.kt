@@ -1,6 +1,8 @@
 package com.example.apitest.di
 
 import android.app.Application
+import android.content.Context
+import com.example.apitest.AppComponent
 import com.example.apitest.data.local.preferences.CityPreferences
 import com.example.apitest.data.local.database.AppDatabase
 import com.example.apitest.data.repositoryImpl.CitiesRepositoryImpl
@@ -65,4 +67,9 @@ object AppModule {
         return CityPreferences(context)
     }
 
+    @Provides
+    @Singleton
+    fun provideContext(context: AppComponent): Context {
+        return context.applicationContext
+    }
 }
