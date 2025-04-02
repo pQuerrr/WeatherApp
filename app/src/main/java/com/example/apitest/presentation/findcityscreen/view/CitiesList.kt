@@ -26,7 +26,7 @@ fun CitiesList(
     LazyColumn {
         items(
             items = cities,
-            key = {it.id}
+            key = { it.id!! }
         ){city ->
             var isVisable by remember { mutableStateOf(true) }
 

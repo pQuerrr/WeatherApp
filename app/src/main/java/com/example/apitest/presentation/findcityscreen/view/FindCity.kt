@@ -120,7 +120,7 @@ fun FindCity(
                     },
                     onSelected = { citySelected ->
                         city = citySelected.city
-                        viewModel.saveCityIdToPref(citySelected.id)
+                        citySelected.id?.let { viewModel.saveCityIdToPref(it) }
                     }
                 )
             }

@@ -7,7 +7,7 @@ interface CitiesRepository {
     suspend fun getUniqueCity(cityName: String): CitiesInfoTuple?
     suspend fun insertNewCitiesData(citiesDbEntity : CitiesDbEntity)
     suspend fun getAllCitiesData(): List<CitiesInfoTuple>
-    suspend fun deleteCitiesDataById(id: Long)
+    suspend fun deleteCitiesDataById(id: Long?)
     suspend fun getCityById(id: Long): CitiesInfoTuple
 //    suspend fun getFavorites(): List<CitiesInfoTuple>
 //    suspend fun setFavorite(cityId: Long, isFavorite: Boolean)

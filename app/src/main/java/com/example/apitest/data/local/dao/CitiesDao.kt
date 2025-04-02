@@ -16,7 +16,7 @@ interface CitiesDao {
     fun getAllCitiesData(): List<CitiesInfoTuple>
 
     @Query("DELETE FROM cities WHERE id = :citiesId")
-    fun deleteCitiesDataById(citiesId: Long)
+    fun deleteCitiesDataById(citiesId: Long?)
 
     @Query("SELECT * FROM cities WHERE city = :cityName")
     fun getUniqueCity(cityName: String): CitiesInfoTuple?

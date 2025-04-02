@@ -29,11 +29,10 @@ class CitiesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteCitiesDataById(id: Long){
-        withContext(Dispatchers.IO){
-            citiesDao.deleteCitiesDataById(id)
-        }
+    override suspend fun deleteCitiesDataById(id: Long?) {
+        citiesDao.deleteCitiesDataById(id)
     }
+
     override suspend fun getCityById(id: Long): CitiesInfoTuple{
         return withContext(Dispatchers.IO){
             return@withContext citiesDao.getCityById(id)
